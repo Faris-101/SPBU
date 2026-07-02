@@ -128,7 +128,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-5 pb-8 overflow-hidden" ref={dashboardRef}>
       {/* BAGIAN 2: 6 KPI CARD */}
-      <div className="grid grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {/* Card 1 — Health Score SPBU */}
         <div className="kpi-card col-span-1" style={{ perspective: prefersReducedMotion ? 'none' : 1000 }}>
           <motion.div className="h-full bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-2xl p-5 shadow-sm">
@@ -218,8 +218,8 @@ export default function Dashboard() {
 
       {/* BAGIAN 3: GRAFIK + CHART + PENJUALAN PER POMPA */}
       <div className="dashboard-row grid grid-cols-12 gap-4">
-        {/* Grafik Penjualan Hari Ini (col-span-5) */}
-        <div className="col-span-5 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col">
+        {/* Grafik Penjualan Hari Ini (col-span-12 lg:col-span-5) */}
+        <div className="col-span-12 lg:col-span-5 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-gray-900">Penjualan Hari Ini</h3>
             <select className="text-xs border border-gray-200 rounded-lg px-2 py-1 text-gray-600 outline-none bg-gray-50">
@@ -252,8 +252,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Penjualan per Produk (col-span-3) */}
-        <div className="col-span-3 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col">
+        {/* Penjualan per Produk (col-span-12 md:col-span-6 lg:col-span-3) */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-3 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col">
           <div className="mb-4">
             <h3 className="font-bold text-gray-900">Penjualan per Produk</h3>
             <p className="text-xs text-gray-500 mt-0.5">Total {formatLiter(dashboardKPI.volumeTerjual)}</p>
@@ -301,8 +301,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Penjualan per Pompa (col-span-4) */}
-        <div className="col-span-4 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+        {/* Penjualan per Pompa (col-span-12 md:col-span-6 lg:col-span-4) */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-4 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-gray-900">Penjualan per Pompa</h3>
             <a href="#" className="text-xs font-medium text-blue-600 hover:underline">Lihat semua →</a>
@@ -334,8 +334,8 @@ export default function Dashboard() {
 
       {/* BAGIAN 4: STATUS POMPA + STATUS TANGKI + HARGA BBM + ALERT */}
       <div className="dashboard-row grid grid-cols-12 gap-4">
-        {/* Status Pompa Saat Ini (col-span-5) */}
-        <div className="col-span-5 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+        {/* Status Pompa Saat Ini (col-span-12 lg:col-span-5) */}
+        <div className="col-span-12 lg:col-span-5 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm overflow-hidden">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-gray-900">Status Pompa Saat Ini</h3>
             <a href="#" className="text-xs font-medium text-blue-600 hover:underline">Lihat semua pompa →</a>
@@ -386,8 +386,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Status Tangki (col-span-3) */}
-        <div className="col-span-3 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+        {/* Status Tangki (col-span-12 md:col-span-6 lg:col-span-3) */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-3 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
           <div className="flex justify-between items-center mb-5">
             <h3 className="font-bold text-gray-900">Status Tangki</h3>
             <a href="#" className="text-xs font-medium text-blue-600 hover:underline">Lihat semua →</a>
@@ -425,8 +425,8 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Harga BBM Hari Ini (col-span-2) */}
-        <div className="col-span-2 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex flex-col">
+        {/* Harga BBM Hari Ini (col-span-12 md:col-span-6 lg:col-span-2) */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex flex-col">
           <h3 className="font-bold text-gray-900 mb-3 text-sm">Harga BBM Hari Ini</h3>
           <div className="flex-1 space-y-1.5">
             {dataHargaBBM && dataHargaBBM.slice(0, 5).map((bbm, idx) => (
@@ -438,8 +438,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Alert & Notifikasi (col-span-2) */}
-        <div className="col-span-2 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col">
+        {/* Alert & Notifikasi (col-span-12 md:col-span-6 lg:col-span-2) */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col">
           <div className="flex justify-between items-center mb-5">
             <h3 className="font-bold text-gray-900">Alert & Notifikasi</h3>
             <a href="#" className="text-xs font-medium text-blue-600 hover:underline">Lihat semua →</a>
@@ -474,13 +474,13 @@ export default function Dashboard() {
 
       {/* BAGIAN 5: QUICK ACTION + AI ASSISTANT + KONDISI SISTEM */}
       <div className="dashboard-row grid grid-cols-12 gap-4">
-        {/* Quick Action (col-span-6) */}
-        <div className="col-span-6 bg-white border border-gray-100 rounded-2xl px-5 py-4 shadow-sm">
+        {/* Quick Action (col-span-12 lg:col-span-6) */}
+        <div className="col-span-12 lg:col-span-6 bg-white border border-gray-100 rounded-2xl px-5 py-4 shadow-sm">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-gray-900">Quick Action</h3>
             <ChevronRight size={16} className="text-gray-400" />
           </div>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
             {[
               { label: 'Buat PO', icon: ShoppingCart },
               { label: 'Catat Pengiriman', icon: Truck },
@@ -501,8 +501,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* AI Assistant (col-span-4) */}
-        <div className="col-span-4 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+        {/* AI Assistant (col-span-12 md:col-span-6 lg:col-span-4) */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-4 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-3">
               <h3 className="font-bold text-gray-900">AI Assistant</h3>
@@ -524,10 +524,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Kondisi Sistem (col-span-2) */}
-        <div className="col-span-2 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+        {/* Kondisi Sistem (col-span-12 md:col-span-6 lg:col-span-2) */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
           <h3 className="font-bold text-gray-900 mb-4">Kondisi Sistem</h3>
-          <div className="grid grid-cols-2 gap-x-2 gap-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-4">
             {[
               { label: 'Internet', status: 'Online', color: 'text-green-600' },
               { label: 'API Pertamina', status: 'Normal', color: 'text-green-600' },

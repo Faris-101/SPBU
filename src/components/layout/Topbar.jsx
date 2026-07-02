@@ -1,14 +1,18 @@
 import React from 'react';
-import { Bell, Settings, Calendar, ChevronDown } from 'lucide-react';
+import { Bell, Settings, Calendar, ChevronDown, Menu } from 'lucide-react';
 import { currentUser } from '../../data/mockData';
 
-const Topbar = () => {
+const Topbar = ({ onMenuClick }) => {
   return (
     <header 
-      className="sticky top-0 z-20 h-16 flex items-center justify-between px-6 border-b border-gray-200 bg-gradient-to-r from-white via-white to-blue-50/30 shadow-sm"
+      className="sticky top-0 z-20 h-16 flex items-center justify-between px-4 md:px-6 border-b border-gray-200 bg-gradient-to-r from-white via-white to-blue-50/30 shadow-sm shrink-0"
     >
-      {/* Left side (empty, for symmetry or breadcrumbs if needed) */}
-      <div></div>
+      {/* Left side */}
+      <div className="flex items-center gap-3">
+        <button onClick={onMenuClick} className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
+          <Menu size={24} />
+        </button>
+      </div>
 
       {/* Right side */}
       <div className="flex items-center gap-6">

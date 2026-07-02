@@ -3,10 +3,10 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { currentUser, spbuInfo } from '../../data/mockData';
 import { images } from '../../assets/images';
 import {
-  LayoutDashboard, Fuel, Droplets, Users, Wrench, ShoppingCart, CreditCard, BarChart3, Landmark, FileBarChart, Settings
+  LayoutDashboard, Fuel, Droplets, Users, Wrench, ShoppingCart, CreditCard, BarChart3, Landmark, FileBarChart, Settings, X
 } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
 
   const menuGroups = [
@@ -64,17 +64,22 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0 shrink-0 shadow-[2px_0_8px_rgba(0,0,0,0.04)] z-10">
+    <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-100 flex flex-col h-screen transform transition-transform duration-300 md:relative md:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full shadow-[2px_0_8px_rgba(0,0,0,0.04)]'}`}>
       
       {/* Header logo */}
-      <div className="p-5 border-b border-gray-100 flex items-center gap-3">
-        <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-2 text-white flex-shrink-0">
-          <Fuel size={24} />
+      <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-2 text-white flex-shrink-0">
+            <Fuel size={24} />
+          </div>
+          <div className="overflow-hidden">
+            <h1 className="font-bold text-xl text-gray-900 font-['Outfit'] truncate">SPBU</h1>
+            <p className="text-xs text-gray-400 font-medium truncate">Control Center</p>
+          </div>
         </div>
-        <div className="overflow-hidden">
-          <h1 className="font-bold text-xl text-gray-900 font-['Outfit'] truncate">SPBU</h1>
-          <p className="text-xs text-gray-400 font-medium truncate">Control Center</p>
-        </div>
+        <button onClick={() => setIsOpen(false)} className="md:hidden text-gray-400 hover:text-gray-600 transition-colors">
+          <X size={20} />
+        </button>
       </div>
 
       {/* User profile strip */}
