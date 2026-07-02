@@ -4,9 +4,16 @@ import StatCard from '../../components/ui/StatCard';
 import Badge from '../../components/ui/Badge';
 import { dataTangki, dataPenerimaanBBM, dataRekonsiliasi } from '../../data/mockData';
 import { Package, CheckCircle, AlertTriangle, Database, Plus } from 'lucide-react';
+import Modal from '../../components/ui/Modal';
+import Toast from '../../components/ui/Toast';
+import { FormField, inputClass, selectClass } from '../../components/ui/FormField';
 
 const StokBBM = () => {
   const [activeTab, setActiveTab] = useState('tangki');
+  const [listPenerimaan, setListPenerimaan] = useState(dataPenerimaanBBM);
+  const [showModalPenerimaan, setShowModalPenerimaan] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [formPenerimaan, setFormPenerimaan] = useState({ supplier: '', produk: 'Pertamax', noDO: '', jumlahDO: '', tangkiTujuan: 'Tank 1' });
 
   const getProductColor = (produk) => {
     switch(produk) {
@@ -191,7 +198,7 @@ const StokBBM = () => {
             <div className="flex justify-between items-center mb-5">
               <h3 className="font-bold text-gray-900">Daftar Penerimaan BBM</h3>
               <button 
-                onClick={() => alert('Modal Tambah Penerimaan BBM Dibuka!')}
+                onClick={() => { setFormPenerimaan({ supplier: '', produk: 'Pertamax', noDO: '', jumlahDO: '', tangkiTujuan: 'Tank 1' }); setShowModalPenerimaan(true); }}
                 className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all duration-300"
               >
                 <Plus size={16} /> Catat Penerimaan Baru
@@ -215,7 +222,7 @@ const StokBBM = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {dataPenerimaanBBM.map((item, i) => {
+                  {listPenerimaan.map((item, i) => {
                     const selisih = item.jumlahDO - (item.jumlahDiterima || 0);
                     return (
                       <tr key={i} className="text-sm hover:bg-gradient-to-r hover:from-blue-50/40 hover:to-transparent transition-colors duration-200">
@@ -301,6 +308,53 @@ const StokBBM = () => {
           </div>
         </div>
       )}
+
+      {/* MODALS */}
+      <Modal isOpen={showModalPenerimaan} onClose={() => setShowModalPenerimaan(false)} title="Catat Penerimaan BBM" size="lg">
+        <FormField label="Supplier">
+          <input className={inputClass} value={formPenerimaan.supplier} onChange={(e) => setFormPenerimaan({...formPenerimaan, supplier: e.target.value})} placeholder="PT Energi Jaya" />
+        </FormField>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="Produk">
+            <select className={selectClass} value={formPenerimaan.produk} onChange={(e) => setFormPenerimaan({...formPenerimaan, produk: e.target.value})}>
+              <option>Pertamax</option><option>Pertalite</option><option>Solar</option><option>Dexlite</option><option>Pertamina Dex</option>
+            </select>
+          </FormField>
+          <FormField label="Tangki Tujuan">
+            <select className={selectClass} value={formPenerimaan.tangkiTujuan} onChange={(e) => setFormPenerimaan({...formPenerimaan, tangkiTujuan: e.target.value})}>
+              <option>Tank 1</option><option>Tank 2</option><option>Tank 3</option><option>Tank 4</option>
+            </select>
+          </FormField>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="Nomor DO">
+            <input className={inputClass} value={formPenerimaan.noDO} onChange={(e) => setFormPenerimaan({...formPenerimaan, noDO: e.target.value})} placeholder="DO-88250" />
+          </FormField>
+          <FormField label="Jumlah (Liter)">
+            <input type="number" className={inputClass} value={formPenerimaan.jumlahDO} onChange={(e) => setFormPenerimaan({...formPenerimaan, jumlahDO: e.target.value})} placeholder="8000" />
+          </FormField>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <button onClick={() => setShowModalPenerimaan(false)} className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">Batal</button>
+          <button
+            onClick={() => {
+              if (!formPenerimaan.supplier || !formPenerimaan.noDO || !formPenerimaan.jumlahDO) return;
+              const newId = `DEL-2026-${Math.floor(Math.random() * 900 + 100)}`;
+              setListPenerimaan([{
+                id: newId, tanggal: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                ...formPenerimaan, jumlahDO: parseInt(formPenerimaan.jumlahDO), jumlahDiterima: null, status: 'Dijadwalkan'
+              }, ...listPenerimaan]);
+              setShowModalPenerimaan(false);
+              setToast({ show: true, message: `Penerimaan BBM "${newId}" berhasil dicatat` });
+            }}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all hover:opacity-90"
+          >
+            Simpan Penerimaan
+          </button>
+        </div>
+      </Modal>
+
+      <Toast show={toast.show} message={toast.message} onClose={() => setToast({ show: false, message: '' })} />
 
     </div>
   );

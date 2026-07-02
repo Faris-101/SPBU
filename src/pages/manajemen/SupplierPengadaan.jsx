@@ -3,9 +3,16 @@ import PageHeader from '../../components/ui/PageHeader';
 import Badge from '../../components/ui/Badge';
 import { dataPO, dataSupplier, dataGudang } from '../../data/mockData';
 import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import Modal from '../../components/ui/Modal';
+import Toast from '../../components/ui/Toast';
+import { FormField, inputClass, selectClass } from '../../components/ui/FormField';
 
 const SupplierPengadaan = () => {
   const [activeTab, setActiveTab] = useState('po');
+  const [listPO, setListPO] = useState(dataPO);
+  const [showModalPO, setShowModalPO] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [formPO, setFormPO] = useState({ supplier: '', produk: 'Pertamax', jumlah: '', tglKirim: '' });
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -46,7 +53,7 @@ const SupplierPengadaan = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-5 border-b border-gray-100 flex justify-between items-center">
             <h3 className="font-bold text-gray-900">Daftar Purchase Order</h3>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all duration-300">
+            <button onClick={() => { setFormPO({ supplier: '', produk: 'Pertamax', jumlah: '', tglKirim: '' }); setShowModalPO(true); }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all duration-300">
               <Plus size={16} /> Buat PO Baru
             </button>
           </div>
@@ -63,7 +70,7 @@ const SupplierPengadaan = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {dataPO.map((po, idx) => (
+                {listPO.map((po, idx) => (
                   <tr key={idx} className="text-sm hover:bg-gradient-to-r hover:from-blue-50/40 hover:to-transparent transition-colors duration-200">
                     <td className="px-6 py-4 font-medium text-gray-900">{po.id}</td>
                     <td className="px-6 py-4 text-gray-600">{po.supplier}</td>
@@ -178,6 +185,47 @@ const SupplierPengadaan = () => {
           </div>
         </div>
       )}
+
+      {/* MODALS */}
+      <Modal isOpen={showModalPO} onClose={() => setShowModalPO(false)} title="Buat Purchase Order Baru" size="lg">
+        <FormField label="Supplier">
+          <select className={selectClass} value={formPO.supplier} onChange={(e) => setFormPO({...formPO, supplier: e.target.value})}>
+            <option value="">Pilih Supplier</option>
+            {dataSupplier.map(s => <option key={s.id} value={s.nama}>{s.nama}</option>)}
+          </select>
+        </FormField>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="Produk">
+            <select className={selectClass} value={formPO.produk} onChange={(e) => setFormPO({...formPO, produk: e.target.value})}>
+              <option>Pertamax</option><option>Pertalite</option><option>Solar</option><option>Dexlite</option><option>Pertamina Dex</option><option>Spare Part</option>
+            </select>
+          </FormField>
+          <FormField label="Jumlah (Liter/Unit)">
+            <input type="number" className={inputClass} value={formPO.jumlah} onChange={(e) => setFormPO({...formPO, jumlah: e.target.value})} placeholder="8000" />
+          </FormField>
+        </div>
+        <FormField label="Tanggal Kirim Diharapkan">
+          <input type="date" className={inputClass} value={formPO.tglKirim} onChange={(e) => setFormPO({...formPO, tglKirim: e.target.value})} />
+        </FormField>
+        <div className="flex gap-3 mt-6">
+          <button onClick={() => setShowModalPO(false)} className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50">Batal</button>
+          <button
+            onClick={() => {
+              if (!formPO.supplier || !formPO.jumlah) return;
+              const newId = `PO-${Date.now().toString().slice(-6)}`;
+              setListPO([{ id: newId, ...formPO, jumlah: formPO.jumlah + ' L', status: 'Draft' }, ...listPO]);
+              setShowModalPO(false);
+              setToast({ show: true, message: `PO baru "${newId}" berhasil dibuat, menunggu approval` });
+            }}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all duration-300"
+          >
+            Buat PO
+          </button>
+        </div>
+      </Modal>
+
+      <Toast show={toast.show} message={toast.message} onClose={() => setToast({ show: false, message: '' })} />
+
     </div>
   );
 };

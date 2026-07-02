@@ -4,9 +4,16 @@ import StatCard from '../../components/ui/StatCard';
 import Badge from '../../components/ui/Badge';
 import { dataMaintenance, dataJadwalMaintenance, dataTiketKerusakan } from '../../data/mockData';
 import { Settings, Wrench, Clock, CheckCircle, Plus, AlertTriangle } from 'lucide-react';
+import Modal from '../../components/ui/Modal';
+import Toast from '../../components/ui/Toast';
+import { FormField, inputClass, selectClass, textareaClass } from '../../components/ui/FormField';
 
 const MaintenanceAset = () => {
   const [activeTab, setActiveTab] = useState('aset');
+  const [listTiket, setListTiket] = useState(dataTiketKerusakan);
+  const [showModalTiket, setShowModalTiket] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [formTiket, setFormTiket] = useState({ aset: '', masalah: '', dilaporkanOleh: 'Andi Pratama' });
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -141,7 +148,7 @@ const MaintenanceAset = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-5 border-b border-gray-100 flex justify-between items-center">
             <h3 className="font-bold text-gray-900">Tiket Laporan Kerusakan</h3>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all duration-300">
+            <button onClick={() => { setFormTiket({ aset: '', masalah: '', dilaporkanOleh: 'Andi Pratama' }); setShowModalTiket(true); }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all duration-300">
               <Plus size={16} /> Laporkan Kerusakan
             </button>
           </div>
@@ -159,7 +166,7 @@ const MaintenanceAset = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {dataTiketKerusakan.map((tiket, idx) => {
+                {listTiket.map((tiket, idx) => {
                   let badgeType = 'info';
                   if (tiket.status === 'Dilaporkan') badgeType = 'secondary';
                   if (tiket.status === 'Sedang Ditangani') badgeType = 'warning';
@@ -190,6 +197,43 @@ const MaintenanceAset = () => {
           </div>
         </div>
       )}
+
+      {/* MODALS */}
+      <Modal isOpen={showModalTiket} onClose={() => setShowModalTiket(false)} title="Laporkan Kerusakan Aset">
+        <FormField label="Aset yang Bermasalah">
+          <select className={selectClass} value={formTiket.aset} onChange={(e) => setFormTiket({...formTiket, aset: e.target.value})}>
+            <option value="">Pilih Aset</option>
+            <option>Pompa 01</option><option>Pompa 02</option><option>Pompa 03</option><option>Pompa 04</option>
+            <option>Pompa 05</option><option>Pompa 06</option><option>Pompa 07</option><option>Pompa 08</option>
+            <option>Tangki - Sensor ATG</option><option>CCTV</option><option>Genset</option><option>Kompresor</option>
+          </select>
+        </FormField>
+        <FormField label="Deskripsi Masalah">
+          <textarea className={textareaClass} rows={3} value={formTiket.masalah} onChange={(e) => setFormTiket({...formTiket, masalah: e.target.value})} placeholder="Jelaskan kerusakan yang terjadi..." />
+        </FormField>
+        <div className="flex gap-3 mt-6">
+          <button onClick={() => setShowModalTiket(false)} className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">Batal</button>
+          <button
+            onClick={() => {
+              if (!formTiket.aset || !formTiket.masalah) return;
+              const newId = `TKT-${Math.floor(Math.random() * 900 + 100)}`;
+              setListTiket([{
+                id: newId, ...formTiket,
+                tanggal: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                teknisi: 'Belum Ditugaskan', status: 'Dilaporkan'
+              }, ...listTiket]);
+              setShowModalTiket(false);
+              setToast({ show: true, message: `Tiket "${newId}" berhasil dibuat, menunggu penugasan teknisi` });
+            }}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all hover:opacity-90"
+          >
+            Kirim Laporan
+          </button>
+        </div>
+      </Modal>
+
+      <Toast show={toast.show} message={toast.message} onClose={() => setToast({ show: false, message: '' })} />
+
     </div>
   );
 };

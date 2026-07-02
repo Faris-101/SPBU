@@ -4,19 +4,27 @@ import StatCard from '../../components/ui/StatCard';
 import Badge from '../../components/ui/Badge';
 import { Users, UserCheck, CalendarOff, Activity, Plus, Download } from 'lucide-react';
 import { dataJadwalShift, dataAbsensi, dataPenggajian } from '../../data/mockData';
+import Modal from '../../components/ui/Modal';
+import Toast from '../../components/ui/Toast';
+import { FormField, inputClass, selectClass } from '../../components/ui/FormField';
 
 const SDMKaryawan = () => {
   const [activeTab, setActiveTab] = useState('karyawan');
   const [filterPeriode, setFilterPeriode] = useState('Juni 2026'); // untuk filter gaji
 
-  const dataKaryawanSDM = [
-    { nama: 'Andi Pratama', inisial: 'AP', role: 'Manager', shift: 'Pagi', status: 'Aktif', hadir: 26, absen: 0 },
-    { nama: 'Budi Santoso', inisial: 'BS', role: 'Kasir', shift: 'Pagi', status: 'Aktif', hadir: 25, absen: 1 },
-    { nama: 'Sari Dewi', inisial: 'SD', role: 'Operator', shift: 'Siang', status: 'Aktif', hadir: 24, absen: 2 },
-    { nama: 'Rudi Hermawan', inisial: 'RH', role: 'Operator', shift: 'Malam', status: 'Aktif', hadir: 26, absen: 0 },
-    { nama: 'Lina Marlina', inisial: 'LM', role: 'Kasir', shift: 'Siang', status: 'Aktif', hadir: 23, absen: 3 },
-    { nama: 'Hasan Basri', inisial: 'HB', role: 'Operator', shift: 'Pagi', status: 'Cuti', hadir: 20, absen: 6 },
-  ];
+  const [listKaryawan, setListKaryawan] = useState([
+    { id: 1, nama: 'Andi Pratama', inisial: 'AP', role: 'Manager', shift: 'Pagi', status: 'Aktif', hadir: 26, absen: 0 },
+    { id: 2, nama: 'Budi Santoso', inisial: 'BS', role: 'Kasir', shift: 'Pagi', status: 'Aktif', hadir: 25, absen: 1 },
+    { id: 3, nama: 'Sari Dewi', inisial: 'SD', role: 'Operator', shift: 'Siang', status: 'Aktif', hadir: 24, absen: 2 },
+    { id: 4, nama: 'Rudi Hermawan', inisial: 'RH', role: 'Operator', shift: 'Malam', status: 'Aktif', hadir: 26, absen: 0 },
+    { id: 5, nama: 'Lina Marlina', inisial: 'LM', role: 'Kasir', shift: 'Siang', status: 'Aktif', hadir: 23, absen: 3 },
+    { id: 6, nama: 'Hasan Basri', inisial: 'HB', role: 'Operator', shift: 'Pagi', status: 'Cuti', hadir: 20, absen: 6 },
+  ]);
+  const [showModalTambah, setShowModalTambah] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [karyawanEdit, setKaryawanEdit] = useState(null);
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [formData, setFormData] = useState({ nama: '', role: 'Operator', shift: 'Pagi', status: 'Aktif' });
 
   const formatRupiah = (n) => 'Rp ' + n.toLocaleString('id-ID');
 
@@ -61,7 +69,7 @@ const SDMKaryawan = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-5 border-b border-gray-100 flex justify-between items-center">
             <h3 className="font-bold text-gray-900">Daftar Karyawan</h3>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all duration-300">
+            <button onClick={() => { setFormData({ nama: '', role: 'Operator', shift: 'Pagi', status: 'Aktif' }); setShowModalTambah(true); }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all duration-300">
               <Plus size={16} /> Tambah Karyawan
             </button>
           </div>
@@ -79,7 +87,7 @@ const SDMKaryawan = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {dataKaryawanSDM.map((karyawan, idx) => (
+                {listKaryawan.map((karyawan, idx) => (
                   <tr key={idx} className="text-sm hover:bg-gradient-to-r hover:from-blue-50/40 hover:to-transparent transition-colors duration-200">
                     <td className="px-5 py-3 font-medium text-gray-900">{idx + 1}</td>
                     <td className="px-5 py-3">
@@ -108,8 +116,8 @@ const SDMKaryawan = () => {
                       />
                     </td>
                     <td className="px-5 py-3 text-right">
-                      <button className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
-                        Detail
+                      <button onClick={() => { setKaryawanEdit(karyawan); setFormData(karyawan); setShowModalEdit(true); }} className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                        Edit
                       </button>
                     </td>
                   </tr>
@@ -236,6 +244,89 @@ const SDMKaryawan = () => {
           </div>
         </div>
       )}
+
+      {/* MODALS */}
+      <Modal isOpen={showModalTambah} onClose={() => setShowModalTambah(false)} title="Tambah Karyawan Baru">
+        <FormField label="Nama Lengkap">
+          <input className={inputClass} value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} placeholder="Contoh: Rina Kartika" />
+        </FormField>
+        <FormField label="Jabatan">
+          <select className={selectClass} value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})}>
+            <option>Manager</option>
+            <option>Supervisor</option>
+            <option>Kasir</option>
+            <option>Operator</option>
+            <option>Teknisi</option>
+          </select>
+        </FormField>
+        <FormField label="Shift">
+          <select className={selectClass} value={formData.shift} onChange={(e) => setFormData({...formData, shift: e.target.value})}>
+            <option>Pagi</option>
+            <option>Siang</option>
+            <option>Malam</option>
+          </select>
+        </FormField>
+        <FormField label="Status">
+          <select className={selectClass} value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+            <option>Aktif</option>
+            <option>Cuti</option>
+            <option>Nonaktif</option>
+          </select>
+        </FormField>
+        <div className="flex gap-3 mt-6">
+          <button onClick={() => setShowModalTambah(false)} className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">Batal</button>
+          <button
+            onClick={() => {
+              if (!formData.nama) return;
+              const newId = listKaryawan.length > 0 ? Math.max(...listKaryawan.map(k => k.id)) + 1 : 1;
+              const inisial = formData.nama.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+              setListKaryawan([...listKaryawan, { id: newId, inisial, ...formData, hadir: 0, absen: 0 }]);
+              setShowModalTambah(false);
+              setToast({ show: true, message: `Karyawan "${formData.nama}" berhasil ditambahkan` });
+            }}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all hover:opacity-90"
+          >
+            Simpan Karyawan
+          </button>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showModalEdit} onClose={() => setShowModalEdit(false)} title={`Edit Data — ${karyawanEdit?.nama}`}>
+        <FormField label="Nama Lengkap">
+          <input className={inputClass} value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} />
+        </FormField>
+        <FormField label="Jabatan">
+          <select className={selectClass} value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})}>
+            <option>Manager</option><option>Supervisor</option><option>Kasir</option><option>Operator</option><option>Teknisi</option>
+          </select>
+        </FormField>
+        <FormField label="Shift">
+          <select className={selectClass} value={formData.shift} onChange={(e) => setFormData({...formData, shift: e.target.value})}>
+            <option>Pagi</option><option>Siang</option><option>Malam</option>
+          </select>
+        </FormField>
+        <FormField label="Status">
+          <select className={selectClass} value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+            <option>Aktif</option><option>Cuti</option><option>Nonaktif</option>
+          </select>
+        </FormField>
+        <div className="flex gap-3 mt-6">
+          <button onClick={() => setShowModalEdit(false)} className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">Batal</button>
+          <button
+            onClick={() => {
+              const inisial = formData.nama.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+              setListKaryawan(listKaryawan.map(k => k.id === karyawanEdit.id ? { ...k, ...formData, inisial } : k));
+              setShowModalEdit(false);
+              setToast({ show: true, message: `Data "${formData.nama}" berhasil diperbarui` });
+            }}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all hover:opacity-90"
+          >
+            Simpan Perubahan
+          </button>
+        </div>
+      </Modal>
+
+      <Toast show={toast.show} message={toast.message} onClose={() => setToast({ show: false, message: '' })} />
 
     </div>
   );

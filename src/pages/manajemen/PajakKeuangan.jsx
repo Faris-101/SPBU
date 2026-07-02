@@ -6,11 +6,18 @@ import {
   dataKasBank, mutasiKasBank, dataPiutang, dataHutang, dataLabaRugi 
 } from '../../data/mockData';
 import { 
-  DollarSign, ArrowUpRight, ArrowDownRight, FileText, Download, Wallet, CreditCard, FileBarChart
+  DollarSign, ArrowUpRight, ArrowDownRight, FileText, Download, Wallet, CreditCard, FileBarChart, Plus
 } from 'lucide-react';
+import Modal from '../../components/ui/Modal';
+import Toast from '../../components/ui/Toast';
+import { FormField, inputClass, selectClass } from '../../components/ui/FormField';
 
 const PajakKeuangan = () => {
   const [activeTab, setActiveTab] = useState('kas');
+  const [listMutasi, setListMutasi] = useState(mutasiKasBank);
+  const [showModalMutasi, setShowModalMutasi] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [formMutasi, setFormMutasi] = useState({ keterangan: '', tipe: 'Masuk', jumlah: '' });
 
   const formatRupiah = (angka) => {
     return new Intl.NumberFormat('id-ID', {
@@ -72,6 +79,9 @@ const PajakKeuangan = () => {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-5 border-b border-gray-100 flex justify-between items-center">
               <h3 className="font-bold text-gray-900">Riwayat Mutasi Kas & Bank</h3>
+              <button onClick={() => { setFormMutasi({ keterangan: '', tipe: 'Masuk', jumlah: '' }); setShowModalMutasi(true); }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all duration-300">
+                <Plus size={16} /> Catat Transaksi
+              </button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -84,7 +94,7 @@ const PajakKeuangan = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {mutasiKasBank.map((mutasi, idx) => (
+                  {listMutasi.map((mutasi, idx) => (
                     <tr key={idx} className="text-sm hover:bg-gradient-to-r hover:from-blue-50/40 hover:to-transparent transition-colors duration-200">
                       <td className="px-6 py-4 text-gray-500">{mutasi.tanggal}</td>
                       <td className="px-6 py-4 font-medium text-gray-900">{mutasi.keterangan}</td>
@@ -225,6 +235,43 @@ const PajakKeuangan = () => {
           </div>
         </div>
       )}
+
+      {/* MODALS */}
+      <Modal isOpen={showModalMutasi} onClose={() => setShowModalMutasi(false)} title="Catat Transaksi Kas">
+        <FormField label="Keterangan">
+          <input className={inputClass} value={formMutasi.keterangan} onChange={(e) => setFormMutasi({...formMutasi, keterangan: e.target.value})} placeholder="Contoh: Setoran kasir shift siang" />
+        </FormField>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="Tipe">
+            <select className={selectClass} value={formMutasi.tipe} onChange={(e) => setFormMutasi({...formMutasi, tipe: e.target.value})}>
+              <option>Masuk</option><option>Keluar</option>
+            </select>
+          </FormField>
+          <FormField label="Jumlah (Rp)">
+            <input type="number" className={inputClass} value={formMutasi.jumlah} onChange={(e) => setFormMutasi({...formMutasi, jumlah: e.target.value})} placeholder="1000000" />
+          </FormField>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <button onClick={() => setShowModalMutasi(false)} className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">Batal</button>
+          <button
+            onClick={() => {
+              if (!formMutasi.keterangan || !formMutasi.jumlah) return;
+              setListMutasi([{
+                tanggal: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                keterangan: formMutasi.keterangan, tipe: formMutasi.tipe, jumlah: parseInt(formMutasi.jumlah)
+              }, ...listMutasi]);
+              setShowModalMutasi(false);
+              setToast({ show: true, message: `Transaksi kas berhasil dicatat` });
+            }}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg text-sm font-semibold shadow-md shadow-blue-500/25 transition-all hover:opacity-90"
+          >
+            Simpan Transaksi
+          </button>
+        </div>
+      </Modal>
+
+      <Toast show={toast.show} message={toast.message} onClose={() => setToast({ show: false, message: '' })} />
+
     </div>
   );
 };
